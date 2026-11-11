@@ -1,0 +1,43 @@
+name: Pipeline
+run-name: ${{ github.ref_name }} lanzado por ${{ github.actor }}
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  STAGE: workflow
+
+jobs:
+  niveles:
+    runs-on: ubuntu-latest
+    env:
+      STAGE: job
+    steps:
+      - name: Valor del job
+        run: echo "STAGE=$STAGE"
+      - name: Valor del step
+        env:
+          STAGE: step
+        run: echo "STAGE=$STAGE"
+
+  origen:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Valor del workflow
+        run: echo "STAGE=$STAGE"
+
+  check-secret:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comprobar PROD_TOKEN
+        env:
+          PROD_TOKEN: ${{ secrets.PROD_TOKEN }}
+        run: |
+          if [ -z "$PROD_TOKEN" ]; then
+            echo "PROD_TOKEN está vacío"
+            exit 1
+          fi
+          echo "secreto presente"
